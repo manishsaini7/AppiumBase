@@ -7,7 +7,6 @@ from setuptools import setup, find_packages  # noqa: F401
 import os
 import sys
 
-
 this_dir = os.path.abspath(os.path.dirname(__file__))
 long_description = None
 total_description = None
@@ -67,7 +66,7 @@ setup(
     url="https://github.com/manishsaini7/AppiumBase",
     project_urls={
         "Changelog": "https://github.com/manishsaini7/AppiumBase/releases",
-        "Download": "",
+        "Download": "https://pypi.org/project/appium-base/",
         "Source": "https://github.com/manishsaini7/AppiumBase",
     },
     platforms=["Windows", "Linux", "Mac OS-X"],
@@ -109,8 +108,6 @@ setup(
     ],
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     install_requires=[
-        'pip>=20.3.4;python_version<"3.6"',
-        'pip>=21.2.4;python_version>="3.6"',
         'packaging>=20.9;python_version<"3.6"',
         'packaging>=21.0;python_version>="3.6"',
         "typing-extensions>=3.10.0.2",
@@ -126,7 +123,6 @@ setup(
         "sortedcontainers==2.4.0",
         "certifi>=2021.5.30",
         "six==1.16.0",
-        "nose==1.3.7",
         'ipdb==0.13.4;python_version<"3.5"',
         'ipdb==0.13.9;python_version>="3.5"',
         'parso==0.7.1;python_version<"3.6"',
@@ -238,7 +234,7 @@ setup(
         "abase",
         "appiumbase.common",
         "appiumbase.config",
-        "seleniumbase.console_scripts",
+        "appiumbase.console_scripts",
         "appiumbase.core",
         "appiumbase.fixtures",
     ],
