@@ -111,11 +111,11 @@ def show_extract_objects_usage():
     print(sc)
     print("")
     print("  Usage:")
-    print("           seleniumbase extract-objects [SB_FILE.py]")
+    print("           appiumbase extract-objects [SB_FILE.py]")
     print("           OR:    sbase extract-objects [SB_FILE.py]")
     print("  Output:")
     print("           Creates page objects based on selectors found in a")
-    print("           seleniumbase Python file and saves those objects to the")
+    print("           appiumbase Python file and saves those objects to the")
     print('           "page_objects.py" file in the same folder as the tests.')
     print("")
 
@@ -128,7 +128,7 @@ def show_inject_objects_usage():
     print(sc)
     print("")
     print("  Usage:")
-    print("           seleniumbase inject-objects [SB_FILE.py] [OPTIONS]")
+    print("           appiumbase inject-objects [SB_FILE.py] [OPTIONS]")
     print("           OR:    sbase inject-objects [SB_FILE.py] [OPTIONS]")
     print("  Options:")
     print("           -c, --comments  (Add object selectors to the comments.)")
@@ -136,7 +136,7 @@ def show_inject_objects_usage():
     print("  Output:")
     print('           Takes the page objects found in the "page_objects.py"')
     print("           file and uses those to replace matching selectors in")
-    print("           the selected seleniumbase Python file.")
+    print("           the selected appiumbase Python file.")
     print("")
 
 
@@ -148,7 +148,7 @@ def show_objectify_usage():
     print(sc)
     print("")
     print("  Usage:")
-    print("           seleniumbase objectify [SB_FILE.py] [OPTIONS]")
+    print("           appiumbase objectify [SB_FILE.py] [OPTIONS]")
     print("           OR:    sbase objectify [SB_FILE.py] [OPTIONS]")
     print("  Options:")
     print("           -c, --comments  (Add object selectors to the comments.)")
@@ -158,7 +158,7 @@ def show_objectify_usage():
     print("           have been replaced with variable names defined in")
     print('           "page_objects.py", supporting the Page Object Pattern.')
     print("")
-    print('           (seleniumbase "objectify" has the same outcome as')
+    print('           (appiumbase "objectify" has the same outcome as')
     print('            combining "extract-objects" with "inject-objects")')
     print("")
 
@@ -171,15 +171,15 @@ def show_revert_objects_usage():
     print(sc)
     print("")
     print("  Usage:")
-    print("           seleniumbase revert-objects [SB_FILE.py] [OPTIONS]")
+    print("           appiumbase revert-objects [SB_FILE.py] [OPTIONS]")
     print("           OR:    sbase revert-objects [SB_FILE.py] [OPTIONS]")
     print("  Options:")
     print("           -c, --comments  (Keep existing comments for the lines.)")
     print("                           (Default: No comments are kept.)")
     print("  Output:")
-    print('           Reverts the changes made by "seleniumbase objectify" or')
-    print('           "seleniumbase inject-objects" when run against a')
-    print("           seleniumbase Python file. Objects will get replaced by")
+    print('           Reverts the changes made by "appiumbase objectify" or')
+    print('           "appiumbase inject-objects" when run against a')
+    print("           appiumbase Python file. Objects will get replaced by")
     print('           selectors stored in the "page_objects.py" file.')
     print("")
 
@@ -192,7 +192,7 @@ def show_encrypt_usage():
     print(sc)
     print("")
     print("  Usage:")
-    print("           seleniumbase encrypt   ||   seleniumbase obfuscate")
+    print("           appiumbase encrypt   ||   appiumbase obfuscate")
     print("                                --OR--")
     print("                  sbase encrypt   ||          sbase obfuscate")
     print("  Output:")
@@ -209,7 +209,7 @@ def show_decrypt_usage():
     print(sc)
     print("")
     print("  Usage:")
-    print("           seleniumbase decrypt   ||   seleniumbase unobfuscate")
+    print("           appiumbase decrypt   ||   appiumbase unobfuscate")
     print("                                --OR--")
     print("                  sbase decrypt   ||          sbase unobfuscate")
     print("  Output:")
@@ -221,7 +221,7 @@ def show_decrypt_usage():
 
 def get_version_info():
     # from pkg_resources import get_distribution
-    # version = get_distribution("seleniumbase").version
+    # version = get_distribution("appiumbase").version
     from appiumbase import __version__
 
     version_info = None
@@ -241,7 +241,7 @@ def show_version_info():
 
 def get_package_location():
     # from pkg_resources import get_distribution
-    # location = get_distribution("seleniumbase").location
+    # location = get_distribution("appiumbase").location
     import os
     import appiumbase
 
@@ -264,12 +264,12 @@ def show_methods():
     c5 = colorama.Fore.LIGHTRED_EX + colorama.Back.LIGHTGREEN_EX
     cr = colorama.Style.RESET_ALL
     sc = (
-        "\n " + c2 + " ** " + c3 + " SeleniumBase Python Methods "
+        "\n " + c2 + " ** " + c3 + " appiumbase Python Methods "
         "" + c2 + " ** " + cr
     )
     print(sc)
     print("")
-    line = "Here are some common methods that come with SeleniumBase:"
+    line = "Here are some common methods that come with appiumbase:"
     line = c1 + line + cr
     print(line)
     line = "(Some optional args are not shown here)"
@@ -295,7 +295,7 @@ def show_options():
     sc = "\n " + c2 + " ** " + c3 + " pytest CLI Options " + c2 + " ** " + cr
     print(sc)
     print("")
-    line = "Here are some common pytest options to use with SeleniumBase:"
+    line = "Here are some common pytest options to use with appiumbase:"
     line = c1 + line + cr
     print(line)
     line = '(Some options are Chromium-specific, e.g. "--guest --mobile")'
@@ -304,7 +304,7 @@ def show_options():
     op += '--device=Device  (The device is in use. Default is "android")\n'
     op += "--slow  (Slow down the automation. Faster than using Demo Mode.)\n"
     op += "--reuse-session / --rs  (Reuse browser session between tests.)\n"
-    op += "--dashboard  (Enable SeleniumBase's Dashboard at dashboard.html)\n"
+    op += "--dashboard  (Enable appiumbase's Dashboard at dashboard.html)\n"
     op += "-m=MARKER  (Run tests with the specified pytest marker.)\n"
     op += "-n=NUM  (Multithread the tests using that many threads.)\n"
     op += "-v  (Verbose mode. Print the full names of each test run.)\n"
@@ -321,7 +321,7 @@ def show_options():
     op += "-x  (Stop running the tests after the first failure is reached.)\n"
     op += "--archive-logs  (Archive old log files instead of deleting them.)\n"
     op += "--mobile  (Use mobile device emulator during tests.)\n"
-    op += "--settings-file=FILE  (Override default SeleniumBase settings.)\n"
+    op += "--settings-file=FILE  (Override default appiumbase settings.)\n"
     op += '--env=ENV  (Set the test env. Access with "self.env" in tests.)\n'
     op += '--data=DATA  (Extra test data. Access with "self.data" in tests.)\n'
     op += cr

@@ -237,6 +237,7 @@ setup(
         "appiumbase.console_scripts",
         "appiumbase.core",
         "appiumbase.fixtures",
+        "appiumbase.plugins",
     ],
     include_package_data=True,
     entry_points={
