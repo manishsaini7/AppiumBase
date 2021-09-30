@@ -1,6 +1,6 @@
 """
 The setup package to install AppiumBase dependencies and plugins.
-(Uses selenium 3.x and is compatible with Python 2.7+ and Python 3.5+)
+(Compatible with Python 2.7+ and Python 3.5+)
 """
 
 from setuptools import setup, find_packages  # noqa: F401
@@ -22,7 +22,7 @@ try:
 except IOError:
     long_description = "A complete library for building end-to-end Application tests."
 about = {}
-# Get the package version from the seleniumbase/__version__.py file
+# Get the package version from the appiumbase/__version__.py file
 with open(os.path.join(this_dir, "appiumbase", "__version__.py"), "rb") as f:
     exec(f.read().decode("utf-8"), about)
 
