@@ -277,24 +277,11 @@ def hover_element_and_double_click(
 
 
 def wait_for_element_present(driver, selector, by=By.CSS_SELECTOR, timeout=settings.LARGE_TIMEOUT):
-    """
-    Searches for the specified element by the given selector. Returns the
-    element object if it exists in the HTML. (The element can be invisible.)
-    Raises NoSuchElementException if the element does not exist in the HTML
-    within the specified timeout.
-    @Params
-    driver - the webdriver object
-    selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
-    timeout - the time to wait for elements in seconds
-    @Returns
-    A web element object
-    """
     element = None
     start_ms = time.time() * 1000.0
     stop_ms = start_ms + (timeout * 1000.0)
     for x in range(int(timeout * 10)):
-        s_utils.check_if_time_limit_exceeded()
+        #s_utils.check_if_time_limit_exceeded()
         try:
             element = driver.find_element(by=by, value=selector)
             return element
@@ -321,9 +308,9 @@ def wait_for_element_visible(
     """
     Searches for the specified element by the given selector. Returns the
     element object if the element is present and visible on the page.
-    Raises NoSuchElementException if the element does not exist in the HTML
+    Raises NoSuchElementException if the element does not exist
     within the specified timeout.
-    Raises ElementNotVisibleException if the element exists in the HTML,
+    Raises ElementNotVisibleException if the element exists,
     but is not visible (eg. opacity is "0") within the specified timeout.
     @Params
     driver - the webdriver object (required)

@@ -23,6 +23,7 @@ class BaseCase(unittest.TestCase):
         self.__called_teardown = False
 
     def click(self, selector, by=By.CSS_SELECTOR, timeout=None, delay=0, scroll=True):
+        self.__check_scope()
         if not timeout:
             timeout = settings.SMALL_TIMEOUT
         original_selector = selector
@@ -87,7 +88,6 @@ class BaseCase(unittest.TestCase):
             selector = '[name="%s"]' % name
             by = By.CSS_SELECTOR
         return (selector, by)
-
 
     def __is_shadow_selector(self, selector):
         self.__fail_if_invalid_shadow_selector_usage(selector)
@@ -622,13 +622,15 @@ class BaseCase(unittest.TestCase):
             self.click(selector, by=by)
 
     def __check_scope(self):
+        if not self.__called_setup:
+            self.setup()
         if hasattr(self, "device"):  # self.browser stores the type of browser
             return  # All good: setUp() already initialized variables in "self"
         else:
             from appiumbase.common.exceptions import OutOfScopeException
 
             message = (
-                "\n It looks like you are trying to call a SeleniumBase method"
+                "\n It looks like you are trying to call a AppiumBase method"
                 "\n from outside the scope of your test class's `self` object,"
                 "\n which is initialized by calling BaseCase's setUp() method."
                 "\n The `self` object is where all test variables are defined."
@@ -667,9 +669,116 @@ class BaseCase(unittest.TestCase):
         element = page_actions.wait_for_element_present(
             self.driver, selector, by, timeout
         )
-        self.set_text_content(selector, text, by=by, timeout=timeout)
+        element.send_keys(text)
+
+    def update_text(
+            self, selector, text, by=By.CSS_SELECTOR, timeout=None, retry=False
+    ):
+        """This method updates an element's text field with new text.
+        Has multiple parts:
+        * Waits for the element to be visible.
+        * Waits for the element to be interactive.
+        * Clears the text field.
+        * Types in the new text.
+        * Hits Enter/Submit (if the text ends in "\n").
+        @Params
+        selector - the selector of the text field
+        text - the new text to type into the text field
+        by - the type of selector to search by (Default: CSS Selector)
+        timeout - how long to wait for the selector to be visible
+        retry - if True, use JS if the Selenium text update fails
+        """
+        self.__check_scope()
+        if not timeout:
+            timeout = settings.LARGE_TIMEOUT
+        selector, by = self.__recalculate_selector(selector, by)
+        if self.__is_shadow_selector(selector):
+            self.__shadow_type(selector, text)
+            return
+        element = self.wait_for_element_visible(
+            selector, by=by, timeout=timeout
+        )
+        self.__scroll_to_element(element, selector, by)
+        try:
+            element.clear()  # May need https://stackoverflow.com/a/50691625
+            backspaces = Keys.BACK_SPACE * 42  # Is the answer to everything
+            element.send_keys(backspaces)  # In case autocomplete keeps text
+        except (StaleElementReferenceException, ENI_Exception):
+            time.sleep(0.16)
+            element = self.wait_for_element_visible(
+                selector, by=by, timeout=timeout
+            )
+            try:
+                element.clear()
+            except Exception:
+                pass  # Clearing the text field first might not be necessary
+        except Exception:
+            pass  # Clearing the text field first might not be necessary
+        if type(text) is int or type(text) is float:
+            text = str(text)
+        try:
+            if not text.endswith("\n"):
+                element.send_keys(text)
+            else:
+                element.send_keys(text[:-1])
+                element.send_keys(Keys.RETURN)
+        except (StaleElementReferenceException, ENI_Exception):
+            time.sleep(0.16)
+            element = self.wait_for_element_visible(
+                selector, by=by, timeout=timeout
+            )
+            element.clear()
+            if not text.endswith("\n"):
+                element.send_keys(text)
+            else:
+                element.send_keys(text[:-1])
+                element.send_keys(Keys.RETURN)
+        except Exception:
+            raise Exception()
+        if self.slow_mode:
+            self.__slow_mode_pause_if_active()
+
+    def __slow_mode_pause_if_active(self):
+        if self.slow_mode:
+            wait_time = settings.DEFAULT_DEMO_MODE_TIMEOUT
+            if self.demo_sleep:
+                wait_time = float(self.demo_sleep)
+            time.sleep(wait_time)
+
+    def __get_test_id(self):
+        """ The id used in various places such as the test log path. """
+        test_id = "%s.%s.%s" % (
+            self.__class__.__module__,
+            self.__class__.__name__,
+            self._testMethodName,
+        )
+        if self._sb_test_identifier and len(str(self._sb_test_identifier)) > 6:
+            test_id = self._sb_test_identifier
+        return test_id
+
+    def set_time_limit(self, time_limit):
+        self.__check_scope()
+        if time_limit:
+            try:
+                ab_config.time_limit = float(time_limit)
+            except Exception:
+                ab_config.time_limit = None
+        else:
+            ab_config.time_limit = None
+        if ab_config.time_limit and ab_config.time_limit > 0:
+            ab_config.time_limit_ms = int(ab_config.time_limit * 1000.0)
+            self.time_limit = ab_config.time_limit
+        else:
+            self.time_limit = None
+            ab_config.time_limit = None
+            ab_config.time_limit_ms = None
 
     def setup(self):
+        if not hasattr(self, "_using_ab_fixture") and self.__called_setup:
+            # This test already called setUp()
+            return
+        self.__called_setup = True
+        self.__called_teardown = False
         self.is_pytest = None
         try:
             # This raises an exception if the test is not coming from pytest
@@ -678,8 +787,6 @@ class BaseCase(unittest.TestCase):
             # Not using pytest (probably nosetests)
             self.is_pytest = False
         if self.is_pytest:
-            test_id = self.__get_test_id()
-            self.test_id = test_id
             self.device = ab_config.device
             self.data = ab_config.data
             self.var1 = ab_config.var1
@@ -691,11 +798,9 @@ class BaseCase(unittest.TestCase):
             self.environment = ab_config.environment
             self.env = self.environment  # Add a shortened version
             self.mobile_emulator = ab_config.mobile_emulator
-            self.device_metrics = ab_config.device_metrics
             self.cap_file = ab_config.cap_file
             self.settings_file = ab_config.settings_file
             self._reuse_session = ab_config.reuse_session
-            self.dashboard = ab_config.dashboard
             self.pytest_html_report = ab_config.pytest_html_report
             if not hasattr(self, "device"):
                 raise Exception(
@@ -705,15 +810,13 @@ class BaseCase(unittest.TestCase):
                 from appiumbase.core import settings_parser
                 settings_parser.set_settings(self.settings_file)
 
-            self.set_time_limit(self.time_limit)
             ab_config.start_time_ms = int(time.time() * 1000.0)
-            if not self.__start_time_ms:
-                # Call this once in case of multiple setUp() calls in the same test
-                self.__start_time_ms = ab_config.start_time_ms
 
-        if self.cap_file:
-            from appiumbase.core import capabilities_parser
-            self.dc = capabilities_parser.get_desired_capabilities(self.cap_file)
+        # Configure the test time limit (if used).
+        self.set_time_limit(self.time_limit)
+
+        from appiumbase.core import capabilities_parser
+        self.dc = capabilities_parser.get_desired_capabilities(self.cap_file)
         self.driver = webdriver.Remote('http://localhost:4723/wd/hub', self.dc)
         return self.driver
 

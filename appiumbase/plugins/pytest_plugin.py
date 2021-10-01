@@ -162,7 +162,7 @@ def pytest_addoption(parser):
     )
 
     sys_argv = sys.argv
-    ab_config._browser_shortcut = None
+    ab_config._device_shortcut = None
 
     device_changes = 0
     device_set = None
@@ -218,24 +218,12 @@ def pytest_configure(config):
     ab_config.var3 = config.getoption("var3")
     ab_config.environment = config.getoption("environment")
     ab_config.mobile_emulator = config.getoption("mobile_emulator")
-    ab_config.device_metrics = config.getoption("device_metrics")
-    ab_config.with_testing_base = config.getoption("with_testing_base")
-    ab_config.port = config.getoption("port")
-    if ab_config.servername != "localhost":
-        # Using Selenium Grid
-        # (Set --server="127.0.0.1" for localhost Grid)
-        if str(ab_config.port) == "443":
-            ab_config.protocol = "https"
     ab_config.cap_file = config.getoption("cap_file")
     ab_config.settings_file = config.getoption("settings_file")
     ab_config.log_path = "latest_logs/"  # (No longer editable!)
-    ab_config.archive_logs = config.getoption("archive_logs")
-    if config.getoption("archive_downloads"):
-        settings.ARCHIVE_EXISTING_DOWNLOADS = True
     ab_config._time_limit = config.getoption("time_limit")
     ab_config.time_limit = config.getoption("time_limit")
     ab_config.slow_mode = config.getoption("slow_mode")
-    ab_config.dashboard = config.getoption("dashboard")
     ab_config.reuse_session = config.getoption("reuse_session")
     ab_config._is_timeout_changed = False
     ab_config._SMALL_TIMEOUT = settings.SMALL_TIMEOUT
@@ -296,19 +284,8 @@ def _get_test_ids_(the_item):
     """
     return test_id, display_id
 
-def pytest_itemcollected(item):
-    if ab_config.dashboard:
-        ab_config.item_count += 1
-        test_id, display_id = _get_test_ids_(item)
-        ab_config._results[test_id] = "Untested"
-        ab_config._duration[test_id] = "-"
-        ab_config._display_id[test_id] = display_id
-        ab_config._d_t_log_path[test_id] = None
-
 def pytest_runtest_setup(item):
     """ This runs before every test with pytest. """
-    if ab_config.dashboard:
-        ab_config._sbase_detected = False
     test_id, display_id = _get_test_ids_(item)
     ab_config._test_id = test_id
     ab_config._latest_display_id = display_id
