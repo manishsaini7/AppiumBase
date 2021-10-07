@@ -161,6 +161,16 @@ def pytest_addoption(parser):
                     session between tests.""",
     )
 
+    parser.addoption(
+        "--bs"
+        "--browserstack",
+        action="store_true",
+        dest="browser_stack",
+        default=False,
+        help="""The option to use Browser Stack as a remote server
+                for webdriver.""",
+    )
+
     sys_argv = sys.argv
     ab_config._device_shortcut = None
 
@@ -225,6 +235,7 @@ def pytest_configure(config):
     ab_config.time_limit = config.getoption("time_limit")
     ab_config.slow_mode = config.getoption("slow_mode")
     ab_config.reuse_session = config.getoption("reuse_session")
+    ab_config.browser_stack = config.getoption("browser_stack")
     ab_config._is_timeout_changed = False
     ab_config._SMALL_TIMEOUT = settings.SMALL_TIMEOUT
     ab_config._LARGE_TIMEOUT = settings.LARGE_TIMEOUT

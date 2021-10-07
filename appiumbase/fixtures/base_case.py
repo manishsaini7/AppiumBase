@@ -787,6 +787,7 @@ class BaseCase(unittest.TestCase):
             # Not using pytest (probably nosetests)
             self.is_pytest = False
         if self.is_pytest:
+            self.remote_address = "http://localhost:4723/wd/hub"
             self.device = ab_config.device
             self.data = ab_config.data
             self.var1 = ab_config.var1
@@ -801,6 +802,7 @@ class BaseCase(unittest.TestCase):
             self.cap_file = ab_config.cap_file
             self.settings_file = ab_config.settings_file
             self._reuse_session = ab_config.reuse_session
+            self.browser_stack = ab_config.browser_stack
             self.pytest_html_report = ab_config.pytest_html_report
             if not hasattr(self, "device"):
                 raise Exception(
@@ -816,8 +818,12 @@ class BaseCase(unittest.TestCase):
         self.set_time_limit(self.time_limit)
 
         from appiumbase.core import capabilities_parser
+
         self.dc = capabilities_parser.get_desired_capabilities(self.cap_file)
-        self.driver = webdriver.Remote('http://localhost:4723/wd/hub', self.dc)
+
+        if self.browser_stack:
+            self.remote_address = "http://hub-cloud.browserstack.com/wd/hub"
+        self.driver = webdriver.Remote(self.remote_address, self.dc)
         return self.driver
 
     def tearDown(self):
