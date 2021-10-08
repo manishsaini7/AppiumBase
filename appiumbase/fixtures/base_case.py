@@ -3,6 +3,7 @@ from appium import webdriver
 from selenium.webdriver.common.by import By
 import time
 import unittest
+from appiumbase.core import appium_launcher
 from appiumbase import config as ab_config
 from appiumbase.config import settings
 from selenium.common.exceptions import (
@@ -10,7 +11,6 @@ from selenium.common.exceptions import (
     ElementNotInteractableException as ENI_Exception,
     StaleElementReferenceException,
 )
-
 from appiumbase.fixtures import page_utils, page_actions
 
 
@@ -821,8 +821,10 @@ class BaseCase(unittest.TestCase):
 
         self.dc = capabilities_parser.get_desired_capabilities(self.cap_file)
 
+
         if self.browser_stack:
             self.remote_address = "http://hub-cloud.browserstack.com/wd/hub"
+        appium_launcher.start_appium_service()
         self.driver = webdriver.Remote(self.remote_address, self.dc)
         return self.driver
 
@@ -833,3 +835,4 @@ class BaseCase(unittest.TestCase):
         super(SubClassOfBaseCase, self).tearDown()
         """
         self.driver.quit()
+        appium_launcher.stop_appium_service()
