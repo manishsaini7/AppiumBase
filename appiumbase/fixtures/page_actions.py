@@ -5,16 +5,16 @@ These methods improve on and expand existing WebDriver commands.
 Improvements include making WebDriver commands more robust and more reliable
 by giving page elements enough time to load before taking action on them.
 The default option for searching for elements is by CSS Selector.
-This can be changed by overriding the "By" parameter.
+This can be changed by overriding the "MobileBy" parameter.
 Options are:
-By.CSS_SELECTOR
-By.CLASS_NAME
-By.ID
-By.NAME
-By.LINK_TEXT
-By.XPATH
-By.TAG_NAME
-By.PARTIAL_LINK_TEXT
+MobileBy.CSS_SELECTOR
+MobileBy.CLASS_NAME
+MobileBy.ID
+MobileBy.NAME
+MobileBy.LINK_TEXT
+MobileBy.XPATH
+MobileBy.TAG_NAME
+MobileBy.PARTIAL_LINK_TEXT
 """
 
 import codecs
@@ -29,19 +29,19 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoSuchFrameException
 from selenium.common.exceptions import NoSuchWindowException
 from selenium.common.exceptions import StaleElementReferenceException
-from selenium.webdriver.common.by import By
+from appium.webdriver.common.mobileby import MobileBy
 from selenium.webdriver.common.action_chains import ActionChains
 from appiumbase.config import settings
 from appiumbase.fixtures import shared_utils as s_utils
 
 
-def is_element_present(driver, selector, by=By.CSS_SELECTOR):
+def is_element_present(driver, selector, by=MobileBy.ACCESSIBILITY_ID):
     """
     Returns whether the specified element selector is present on the page.
     @Params
     driver - the webdriver object (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     @Returns
     Boolean (is element present)
     """
@@ -52,13 +52,13 @@ def is_element_present(driver, selector, by=By.CSS_SELECTOR):
         return False
 
 
-def is_element_visible(driver, selector, by=By.CSS_SELECTOR):
+def is_element_visible(driver, selector, by=MobileBy.ACCESSIBILITY_ID):
     """
     Returns whether the specified element selector is visible on the page.
     @Params
     driver - the webdriver object (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     @Returns
     Boolean (is element visible)
     """
@@ -69,13 +69,13 @@ def is_element_visible(driver, selector, by=By.CSS_SELECTOR):
         return False
 
 
-def is_element_enabled(driver, selector, by=By.CSS_SELECTOR):
+def is_element_enabled(driver, selector, by=MobileBy.ACCESSIBILITY_ID):
     """
     Returns whether the specified element selector is enabled on the page.
     @Params
     driver - the webdriver object (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     @Returns
     Boolean (is element enabled)
     """
@@ -86,14 +86,14 @@ def is_element_enabled(driver, selector, by=By.CSS_SELECTOR):
         return False
 
 
-def is_text_visible(driver, text, selector, by=By.CSS_SELECTOR):
+def is_text_visible(driver, text, selector, by=MobileBy.ACCESSIBILITY_ID):
     """
     Returns whether the specified text is visible in the specified selector.
     @Params
     driver - the webdriver object (required)
     text - the text string to search for
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     @Returns
     Boolean (is text visible)
     """
@@ -105,7 +105,7 @@ def is_text_visible(driver, text, selector, by=By.CSS_SELECTOR):
 
 
 def is_attribute_present(
-        driver, selector, attribute, value=None, by=By.CSS_SELECTOR
+        driver, selector, attribute, value=None, by=MobileBy.ACCESSIBILITY_ID
 ):
     """
     Returns whether the specified attribute is present in the given selector.
@@ -114,7 +114,7 @@ def is_attribute_present(
     selector - the locator for identifying the page element (required)
     attribute - the attribute that is expected for the element (required)
     value - the attribute value that is expected (Default: None)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     @Returns
     Boolean (is attribute present)
     """
@@ -135,13 +135,13 @@ def is_attribute_present(
         return False
 
 
-def hover_on_element(driver, selector, by=By.CSS_SELECTOR):
+def hover_on_element(driver, selector, by=MobileBy.ACCESSIBILITY_ID):
     """
     Fires the hover event for the specified element by the given selector.
     @Params
     driver - the webdriver object (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     """
     element = driver.find_element(by=by, value=selector)
     hover = ActionChains(driver).move_to_element(element)
@@ -165,8 +165,8 @@ def hover_and_click(
         driver,
         hover_selector,
         click_selector,
-        hover_by=By.CSS_SELECTOR,
-        click_by=By.CSS_SELECTOR,
+        hover_by=MobileBy.ACCESSIBILITY_ID,
+        click_by=MobileBy.ACCESSIBILITY_ID,
         timeout=settings.SMALL_TIMEOUT,
 ):
     """
@@ -176,8 +176,8 @@ def hover_and_click(
     driver - the webdriver object (required)
     hover_selector - the css selector to hover over (required)
     click_selector - the css selector to click on (required)
-    hover_by - the hover selector type to search by (Default: By.CSS_SELECTOR)
-    click_by - the click selector type to search by (Default: By.CSS_SELECTOR)
+    hover_by - the hover selector type to search by (Default: MobileBy.CSS_SELECTOR)
+    click_by - the click selector type to search by (Default: MobileBy.CSS_SELECTOR)
     timeout - number of seconds to wait for click element to appear after hover
     """
     start_ms = time.time() * 1000.0
@@ -210,7 +210,7 @@ def hover_element_and_click(
         driver,
         element,
         click_selector,
-        click_by=By.CSS_SELECTOR,
+        click_by=MobileBy.ACCESSIBILITY_ID,
         timeout=settings.SMALL_TIMEOUT,
 ):
     """
@@ -245,7 +245,7 @@ def hover_element_and_double_click(
         driver,
         element,
         click_selector,
-        click_by=By.CSS_SELECTOR,
+        click_by=MobileBy.ACCESSIBILITY_ID,
         timeout=settings.SMALL_TIMEOUT,
 ):
     start_ms = time.time() * 1000.0
@@ -276,7 +276,7 @@ def hover_element_and_double_click(
     timeout_exception(NoSuchElementException, message)
 
 
-def wait_for_element_present(driver, selector, by=By.CSS_SELECTOR, timeout=settings.LARGE_TIMEOUT):
+def wait_for_element_present(driver, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=settings.LARGE_TIMEOUT):
     element = None
     start_ms = time.time() * 1000.0
     stop_ms = start_ms + (timeout * 1000.0)
@@ -303,7 +303,7 @@ def wait_for_element_present(driver, selector, by=By.CSS_SELECTOR, timeout=setti
 
 
 def wait_for_element_visible(
-        driver, selector, by=By.CSS_SELECTOR, timeout=settings.LARGE_TIMEOUT
+        driver, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=settings.LARGE_TIMEOUT
 ):
     """
     Searches for the specified element by the given selector. Returns the
@@ -315,7 +315,7 @@ def wait_for_element_visible(
     @Params
     driver - the webdriver object (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     timeout - the time to wait for elements in seconds
     @Returns
     A web element object
@@ -341,7 +341,7 @@ def wait_for_element_visible(
     plural = "s"
     if timeout == 1:
         plural = ""
-    if not element and by != By.LINK_TEXT:
+    if not element and by != MobileBy.LINK_TEXT:
         if not is_present:
             # The element does not exist in the HTML
             message = "Element {%s} was not present after %s second%s!" % (
@@ -357,7 +357,7 @@ def wait_for_element_visible(
             plural,
         )
         timeout_exception(ElementNotVisibleException, message)
-    if not element and by == By.LINK_TEXT:
+    if not element and by == MobileBy.LINK_TEXT:
         message = "Link text {%s} was not visible after %s second%s!" % (
             selector,
             timeout,
@@ -367,7 +367,7 @@ def wait_for_element_visible(
 
 
 def wait_for_text_visible(
-        driver, text, selector, by=By.CSS_SELECTOR, timeout=settings.LARGE_TIMEOUT
+        driver, text, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=settings.LARGE_TIMEOUT
 ):
     """
     Searches for the specified element by the given selector. Returns the
@@ -381,7 +381,7 @@ def wait_for_text_visible(
     driver - the webdriver object (required)
     text - the text that is being searched for in the element (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     timeout - the time to wait for elements in seconds
     @Returns
     A web element object that contains the text searched for
@@ -426,7 +426,7 @@ def wait_for_text_visible(
 
 
 def wait_for_exact_text_visible(
-        driver, text, selector, by=By.CSS_SELECTOR, timeout=settings.LARGE_TIMEOUT
+        driver, text, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=settings.LARGE_TIMEOUT
 ):
     """
     Searches for the specified element by the given selector. Returns the
@@ -440,7 +440,7 @@ def wait_for_exact_text_visible(
     driver - the webdriver object (required)
     text - the exact text that is expected for the element (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     timeout - the time to wait for elements in seconds
     @Returns
     A web element object that contains the text searched for
@@ -489,7 +489,7 @@ def wait_for_attribute(
         selector,
         attribute,
         value=None,
-        by=By.CSS_SELECTOR,
+        by=MobileBy.ACCESSIBILITY_ID,
         timeout=settings.LARGE_TIMEOUT,
 ):
     """
@@ -505,7 +505,7 @@ def wait_for_attribute(
     selector - the locator for identifying the page element (required)
     attribute - the attribute that is expected for the element (required)
     value - the attribute value that is expected (Default: None)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     timeout - the time to wait for the element attribute in seconds
     @Returns
     A web element object that contains the expected attribute/value
@@ -571,7 +571,7 @@ def wait_for_attribute(
 
 
 def wait_for_element_absent(
-        driver, selector, by=By.CSS_SELECTOR, timeout=settings.LARGE_TIMEOUT
+        driver, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=settings.LARGE_TIMEOUT
 ):
     """
     Searches for the specified element by the given selector.
@@ -580,7 +580,7 @@ def wait_for_element_absent(
     @Params
     driver - the webdriver object
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     timeout - the time to wait for elements in seconds
     """
     start_ms = time.time() * 1000.0
@@ -607,7 +607,7 @@ def wait_for_element_absent(
 
 
 def wait_for_element_not_visible(
-        driver, selector, by=By.CSS_SELECTOR, timeout=settings.LARGE_TIMEOUT
+        driver, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=settings.LARGE_TIMEOUT
 ):
     """
     Searches for the specified element by the given selector.
@@ -616,7 +616,7 @@ def wait_for_element_not_visible(
     @Params
     driver - the webdriver object (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     timeout - the time to wait for the element in seconds
     """
     start_ms = time.time() * 1000.0
@@ -646,7 +646,7 @@ def wait_for_element_not_visible(
 
 
 def wait_for_text_not_visible(
-        driver, text, selector, by=By.CSS_SELECTOR, timeout=settings.LARGE_TIMEOUT
+        driver, text, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=settings.LARGE_TIMEOUT
 ):
     """
     Searches for the text in the element of the given selector on the page.
@@ -656,7 +656,7 @@ def wait_for_text_not_visible(
     driver - the webdriver object (required)
     text - the text that is being searched for in the element (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     timeout - the time to wait for elements in seconds
     @Returns
     A web element object that contains the text searched for
@@ -688,7 +688,7 @@ def wait_for_attribute_not_present(
         selector,
         attribute,
         value=None,
-        by=By.CSS_SELECTOR,
+        by=MobileBy.ACCESSIBILITY_ID,
         timeout=settings.LARGE_TIMEOUT
 ):
     """
@@ -701,7 +701,7 @@ def wait_for_attribute_not_present(
     selector - the locator for identifying the page element (required)
     attribute - the element attribute (required)
     value - the attribute value (Default: None)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     timeout - the time to wait for the element attribute in seconds
     """
     start_ms = time.time() * 1000.0
@@ -732,14 +732,14 @@ def wait_for_attribute_not_present(
     timeout_exception(Exception, message)
 
 
-def find_visible_elements(driver, selector, by=By.CSS_SELECTOR):
+def find_visible_elements(driver, selector, by=MobileBy.ACCESSIBILITY_ID):
     """
     Finds all WebElements that match a selector and are visible.
     Similar to webdriver.find_elements.
     @Params
     driver - the webdriver object (required)
     selector - the locator for identifying the page element (required)
-    by - the type of selector being used (Default: By.CSS_SELECTOR)
+    by - the type of selector being used (Default: MobileBy.CSS_SELECTOR)
     """
     elements = driver.find_elements(by=by, value=selector)
     try:
@@ -772,7 +772,7 @@ def save_screenshot(driver, name, folder=None):
     else:
         screenshot_path = name
     try:
-        element = driver.find_element(by=By.TAG_NAME, value="body")
+        element = driver.find_element(by=MobileBy.TAG_NAME, value="body")
         element_png = element.screenshot_as_png
         with open(screenshot_path, "wb") as file:
             file.write(element_png)

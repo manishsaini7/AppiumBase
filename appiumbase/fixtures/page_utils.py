@@ -90,3 +90,11 @@ def get_name_from_selector(selector):
     if selector.startswith("&"):
         return selector[len("&"):]
     return selector
+
+def is_id_selector(selector):
+    """
+    A basic method to determine whether a ID selector or not
+    """
+    if ":id" in selector:
+        return True
+    return False

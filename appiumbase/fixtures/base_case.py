@@ -1,6 +1,7 @@
 import sys
+import requests
 from appium import webdriver
-from selenium.webdriver.common.by import By
+from appium.webdriver.common.mobileby import MobileBy
 import time
 import unittest
 from appiumbase.core import appium_launcher
@@ -22,7 +23,7 @@ class BaseCase(unittest.TestCase):
         self.__called_setup = False
         self.__called_teardown = False
 
-    def click(self, selector, by=By.CSS_SELECTOR, timeout=None, delay=0, scroll=True):
+    def click(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None, delay=0, scroll=True):
         self.__check_scope()
         if not timeout:
             timeout = settings.SMALL_TIMEOUT
@@ -40,10 +41,10 @@ class BaseCase(unittest.TestCase):
             self.__scroll_to_element(element, selector, by)
         element.click()
 
-    def scroll_to_element(self, selector, by=By.CSS_SELECTOR, timeout=None):
+    def scroll_to_element(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         self.scroll_to(selector, by=by, timeout=timeout)
 
-    def scroll_to(self, selector, by=By.CSS_SELECTOR, timeout=None):
+    def scroll_to(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         """ Fast scroll to destination """
         self.__check_scope()
         if not timeout:
@@ -76,17 +77,19 @@ class BaseCase(unittest.TestCase):
             msg = "Expecting a selector of type: \"<class 'str'>\" (string)!"
             raise Exception('Invalid selector type: "%s"\n%s' % (_type, msg))
         if page_utils.is_xpath_selector(selector):
-            by = By.XPATH
+            by = MobileBy.XPATH
         if page_utils.is_link_text_selector(selector):
             selector = page_utils.get_link_text_from_selector(selector)
-            by = By.LINK_TEXT
+            by = MobileBy.LINK_TEXT
         if page_utils.is_partial_link_text_selector(selector):
             selector = page_utils.get_partial_link_text_from_selector(selector)
-            by = By.PARTIAL_LINK_TEXT
+            by = MobileBy.PARTIAL_LINK_TEXT
         if page_utils.is_name_selector(selector):
             name = page_utils.get_name_from_selector(selector)
             selector = '[name="%s"]' % name
-            by = By.CSS_SELECTOR
+            by = MobileBy.CSS_SELECTOR
+        if page_utils.is_id_selector(selector):
+            by = MobileBy.ID
         return (selector, by)
 
     def __is_shadow_selector(self, selector):
@@ -103,7 +106,7 @@ class BaseCase(unittest.TestCase):
             )
             raise Exception(msg)
 
-    def double_click(self, selector, by=By.CSS_SELECTOR, timeout=None):
+    def double_click(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         from selenium.webdriver.common.action_chains import ActionChains
 
         self.__check_scope()
@@ -127,7 +130,7 @@ class BaseCase(unittest.TestCase):
         self.__last_page_load_url = None
         self.driver.back()
 
-    def is_checked(self, selector, by=By.CSS_SELECTOR, timeout=None):
+    def is_checked(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         """Determines if a checkbox or a radio button element is checked.
         Returns True if the element is checked.
         Returns False if the element is not checked.
@@ -152,7 +155,7 @@ class BaseCase(unittest.TestCase):
             self,
             dropdown_selector,
             option,
-            dropdown_by=By.CSS_SELECTOR,
+            dropdown_by=MobileBy.ACCESSIBILITY_ID,
             option_by="text",
             timeout=None,
     ):
@@ -193,7 +196,7 @@ class BaseCase(unittest.TestCase):
             self,
             dropdown_selector,
             option,
-            dropdown_by=By.CSS_SELECTOR,
+            dropdown_by=MobileBy.ACCESSIBILITY_ID,
             timeout=None,
     ):
         """Selects an HTML <select> option by option text.
@@ -216,7 +219,7 @@ class BaseCase(unittest.TestCase):
             self,
             dropdown_selector,
             option,
-            dropdown_by=By.CSS_SELECTOR,
+            dropdown_by=MobileBy.ACCESSIBILITY_ID,
             timeout=None,
     ):
         """Selects an HTML <select> option by option index.
@@ -239,7 +242,7 @@ class BaseCase(unittest.TestCase):
             self,
             dropdown_selector,
             option,
-            dropdown_by=By.CSS_SELECTOR,
+            dropdown_by=MobileBy.ACCESSIBILITY_ID,
             timeout=None,
     ):
         """Selects an HTML <select> option by option value.
@@ -278,11 +281,11 @@ class BaseCase(unittest.TestCase):
                     break
                 time.sleep(0.2)
 
-    def is_selected(self, selector, by=By.CSS_SELECTOR, timeout=None):
+    def is_selected(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         """ Same as is_checked() """
         return self.is_checked(selector, by=by, timeout=timeout)
 
-    def check_if_unchecked(self, selector, by=By.CSS_SELECTOR):
+    def check_if_unchecked(self, selector, by=MobileBy.ACCESSIBILITY_ID):
         """ If a checkbox or radio button is not checked, will check it. """
         self.__check_scope()
         selector, by = self.__recalculate_selector(selector, by)
@@ -290,11 +293,11 @@ class BaseCase(unittest.TestCase):
             if self.is_element_visible(selector, by=by):
                 self.click(selector, by=by)
 
-    def select_if_unselected(self, selector, by=By.CSS_SELECTOR):
+    def select_if_unselected(self, selector, by=MobileBy.ACCESSIBILITY_ID):
         """ Same as check_if_unchecked() """
         self.check_if_unchecked(selector, by=by)
 
-    def uncheck_if_checked(self, selector, by=By.CSS_SELECTOR):
+    def uncheck_if_checked(self, selector, by=MobileBy.ACCESSIBILITY_ID):
         """ If a checkbox is checked, will uncheck it. """
         self.__check_scope()
         selector, by = self.__recalculate_selector(selector, by)
@@ -302,11 +305,11 @@ class BaseCase(unittest.TestCase):
             if self.is_element_visible(selector, by=by):
                 self.click(selector, by=by)
 
-    def unselect_if_selected(self, selector, by=By.CSS_SELECTOR):
+    def unselect_if_selected(self, selector, by=MobileBy.ACCESSIBILITY_ID):
         """ Same as uncheck_if_checked() """
         self.uncheck_if_checked(selector, by=by)
 
-    def is_element_visible(self, selector, by=By.CSS_SELECTOR):
+    def is_element_visible(self, selector, by=MobileBy.ACCESSIBILITY_ID):
         selector, by = self.__recalculate_selector(selector, by)
         return page_actions.is_element_visible(self.driver, selector, by)
 
@@ -314,7 +317,7 @@ class BaseCase(unittest.TestCase):
             self,
             selector,
             attribute,
-            by=By.CSS_SELECTOR,
+            by=MobileBy.ACCESSIBILITY_ID,
             timeout=None,
             hard_fail=True,
     ):
@@ -386,7 +389,7 @@ class BaseCase(unittest.TestCase):
                 element = page_actions.wait_for_element_present(
                     shadow_root,
                     selector_part,
-                    by=By.CSS_SELECTOR,
+                    by=MobileBy.CSS_SELECTOR,
                     timeout=timeout,
                 )
             except Exception:
@@ -401,7 +404,7 @@ class BaseCase(unittest.TestCase):
         self.__check_scope()
         return self.driver.execute_script(script, *args, **kwargs)
 
-    def get_element(self, selector, by=By.CSS_SELECTOR, timeout=None):
+    def get_element(self, selector, by=MobileBy.CSS_SELECTOR, timeout=None):
         """Same as wait_for_element_present() - returns the element.
         The element does not need be visible (it may be hidden)."""
         self.__check_scope()
@@ -411,7 +414,7 @@ class BaseCase(unittest.TestCase):
         return self.wait_for_element_present(selector, by=by, timeout=timeout)
 
     def wait_for_element_visible(
-            self, selector, by=By.CSS_SELECTOR, timeout=None
+            self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None
     ):
         """ Same as self.wait_for_element() """
         self.__check_scope()
@@ -425,7 +428,7 @@ class BaseCase(unittest.TestCase):
         )
 
     def wait_for_element_present(
-            self, selector, by=By.CSS_SELECTOR, timeout=None
+            self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None
     ):
         """Waits for an element to appear in the HTML of a page.
         The element does not need be visible (it may be hidden)."""
@@ -439,7 +442,7 @@ class BaseCase(unittest.TestCase):
             self.driver, selector, by, timeout
         )
 
-    def wait_for_element(self, selector, by=By.CSS_SELECTOR, timeout=None):
+    def wait_for_element(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         """Waits for an element to appear in the HTML of a page.
         The element must be visible (it cannot be hidden)."""
         self.__check_scope()
@@ -498,7 +501,7 @@ class BaseCase(unittest.TestCase):
             page_actions.timeout_exception("ElementNotVisibleException", msg)
         return True
 
-    def find_elements(self, selector, by=By.CSS_SELECTOR, limit=0):
+    def find_elements(self, selector, by=MobileBy.ACCESSIBILITY_ID, limit=0):
         """Returns a list of matching WebElements.
         Elements could be either hidden or visible on the page.
         If "limit" is set and > 0, will only return that many elements."""
@@ -510,7 +513,7 @@ class BaseCase(unittest.TestCase):
         return elements
 
     def wait_for_element_not_present(
-            self, selector, by=By.CSS_SELECTOR, timeout=None
+            self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None
     ):
         """Same as self.wait_for_element_absent()
         Waits for an element to no longer appear in the HTML of a page.
@@ -526,7 +529,7 @@ class BaseCase(unittest.TestCase):
             self.driver, selector, by, timeout
         )
 
-    def find_visible_elements(self, selector, by=By.CSS_SELECTOR, limit=0):
+    def find_visible_elements(self, selector, by=MobileBy.ACCESSIBILITY_ID, limit=0):
         """Returns a list of matching WebElements that are visible.
         If "limit" is set and > 0, will only return that many elements."""
         selector, by = self.__recalculate_selector(selector, by)
@@ -537,7 +540,7 @@ class BaseCase(unittest.TestCase):
         return v_elems
 
     def click_visible_elements(
-            self, selector, by=By.CSS_SELECTOR, limit=0, timeout=None
+            self, selector, by=MobileBy.ACCESSIBILITY_ID, limit=0, timeout=None
     ):
         """Finds all matching page elements and clicks visible ones in order.
         If a click reloads or opens a new page, the clicking will stop.
@@ -614,7 +617,7 @@ class BaseCase(unittest.TestCase):
         """
         return self.assertRaises(*args, **kwargs)
 
-    def click_if_visible(self, selector, by=By.CSS_SELECTOR):
+    def click_if_visible(self, selector, by=MobileBy.ACCESSIBILITY_ID):
         """If the page selector exists and is visible, clicks on the element.
         This method only clicks on the first matching element found.
         (Use click_visible_elements() to click all matching elements.)"""
@@ -647,15 +650,15 @@ class BaseCase(unittest.TestCase):
     def __scroll_to_element(self, element, selector, by):
         pass
 
-    def slow_scroll_to(self, selector, by=By.CSS_SELECTOR, timeout=None):
+    def slow_scroll_to(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         """ Slow motion scroll to destination """
         self.__check_scope()
         pass
 
-    def slow_scroll_to_element(self, selector, by=By.CSS_SELECTOR, timeout=None):
+    def slow_scroll_to_element(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         self.slow_scroll_to(selector, by=by, timeout=timeout)
 
-    def set_text(self, selector, text, by=By.CSS_SELECTOR, timeout=None):
+    def set_text(self, selector, text, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         """Same as self.js_update_text()
         JavaScript + send_keys are used to update a text field.
         Performs self.set_value() and triggers event listeners.
@@ -672,7 +675,7 @@ class BaseCase(unittest.TestCase):
         element.send_keys(text)
 
     def update_text(
-            self, selector, text, by=By.CSS_SELECTOR, timeout=None, retry=False
+            self, selector, text, by=MobileBy.ACCESSIBILITY_ID, timeout=None, retry=False
     ):
         """This method updates an element's text field with new text.
         Has multiple parts:
@@ -787,7 +790,7 @@ class BaseCase(unittest.TestCase):
             # Not using pytest (probably nosetests)
             self.is_pytest = False
         if self.is_pytest:
-            self.remote_address = "http://localhost:4723/wd/hub"
+            self.remote_address = "http://0.0.0.0:4723/wd/hub"
             self.device = ab_config.device
             self.data = ab_config.data
             self.var1 = ab_config.var1
@@ -824,6 +827,7 @@ class BaseCase(unittest.TestCase):
 
         if self.browser_stack:
             self.remote_address = "http://hub-cloud.browserstack.com/wd/hub"
+
         appium_launcher.start_appium_service()
         self.driver = webdriver.Remote(self.remote_address, self.dc)
         return self.driver
