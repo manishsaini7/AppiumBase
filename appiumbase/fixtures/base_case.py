@@ -4,6 +4,9 @@ from appium import webdriver
 from appium.webdriver.common.mobileby import MobileBy
 import time
 import unittest
+
+from appium.webdriver.common.touch_action import TouchAction
+
 from appiumbase.core import appium_launcher
 from appiumbase import config as ab_config
 from appiumbase.config import settings
@@ -41,8 +44,72 @@ class BaseCase(unittest.TestCase):
             self.__scroll_to_element(element, selector, by)
         element.click()
 
+    def tap(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None, delay=0):
+        self.__check_scope()
+        if not timeout:
+            timeout = settings.SMALL_TIMEOUT
+        selector, by = self.__recalculate_selector(selector, by)
+        if delay and (type(delay) in [int, float]) and delay > 0:
+            time.sleep(delay)
+        element = page_actions.wait_for_element_visible(self.driver, selector, by, timeout=timeout)
+        actions = TouchAction(self.driver)
+        actions.tap(element).perform()
+
+    def back(self):
+        self.driver.back()
+
+    def close(self):
+        self.driver.close_app()
+
+    def launch_app(self):
+        self.driver.lauch_app()
+
+    def swipe_between_element(self, start_selector, dest_selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
+        self.__check_scope()
+        if not timeout:
+            timeout = settings.SMALL_TIMEOUT
+        start_selector, by = self.__recalculate_selector(start_selector, by)
+        dest_selector, by = self.__recalculate_selector(dest_selector, by)
+        start_element = page_actions.wait_for_element_visible(self.driver, start_selector, by, timeout=timeout)
+        dest_element = page_actions.wait_for_element_visible(self.driver, dest_selector, by, timeout=timeout)
+        self.driver.scroll(start_element,dest_element)
+
+    def swipe_to_element(self, selector, by=MobileBy.ACCESSIBILITY_ID, start_x=100, start_y=100, end_x=0, end_y=0, duration=0, count=10, timeout=None):
+        self.__check_scope()
+        if not timeout:
+            timeout = settings.SMALL_TIMEOUT
+        selector, by = self.__recalculate_selector(selector, by)
+        for i in range(count):
+            try:
+                self.is_element_visible(selector,by)
+                break
+            except Exception as e:
+                self.driver.swipe(start_x, start_y, end_x, end_y, duration)
+
+
+    def tap_by_coordinates(self, x, y):
+        self.__check_scope()
+        time.sleep(2)
+        actions = TouchAction(self.driver)
+        actions.tap(x=x, y=y).perform()
+
+    def double_tap(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None, delay=0):
+        self.__check_scope()
+        if not timeout:
+            timeout = settings.SMALL_TIMEOUT
+        selector, by = self.__recalculate_selector(selector, by)
+        if delay and (type(delay) in [int, float]) and delay > 0:
+            time.sleep(delay)
+        element = page_actions.wait_for_element_visible(self.driver, selector, by, timeout=timeout)
+        actions = TouchAction(self.driver)
+        actions.tap(element, count=2).perform()
+
+
+
     def scroll_to_element(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         self.scroll_to(selector, by=by, timeout=timeout)
+
+
 
     def scroll_to(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         """ Fast scroll to destination """
@@ -60,6 +127,8 @@ class BaseCase(unittest.TestCase):
                 selector, by=by, timeout=timeout
             )
             self.__scroll_to_element(element, selector, by)
+
+
 
     def __recalculate_selector(self, selector, by, xp_ok=True):
         """Use autodetection to return the correct selector with "by" updated.

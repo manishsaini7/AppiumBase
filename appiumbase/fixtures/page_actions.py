@@ -4,7 +4,7 @@ for waiting for elements to appear on a page.
 These methods improve on and expand existing WebDriver commands.
 Improvements include making WebDriver commands more robust and more reliable
 by giving page elements enough time to load before taking action on them.
-The default option for searching for elements is by CSS Selector.
+The default option for searching for elements is by Accessibility ID.
 This can be changed by overriding the "MobileBy" parameter.
 Options are:
 MobileBy.CSS_SELECTOR
