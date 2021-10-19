@@ -75,7 +75,7 @@ setup(
     maintainer="Manish Saini",
     license="MIT",
     classifiers=[
-        "Development Status :: 5 - Production/Stable",
+        "Development Status :: 2 - Pre-Alpha",
         "Environment :: Console",
         "Environment :: MacOS X",
         "Environment :: Win32 (MS Windows)",
