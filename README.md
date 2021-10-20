@@ -7,4 +7,4 @@
 You can easily install AppiumBase from pypi:
 > pip install appiumbase
 
-#####Type seleniumbase or sbase to verify that SeleniumBase was installed successfully:
+######Type seleniumbase or sbase to verify that SeleniumBase was installed successfully:
