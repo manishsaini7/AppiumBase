@@ -162,7 +162,7 @@ def pytest_addoption(parser):
     )
 
     parser.addoption(
-        "--bs"
+        "--bs",
         "--browserstack",
         action="store_true",
         dest="browser_stack",
