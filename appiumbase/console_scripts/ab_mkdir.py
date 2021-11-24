@@ -204,7 +204,6 @@ def main():
     data.append("env.bak/")
     data.append("venv.bak/")
     data.append(".abase")
-    data.append(".sbase*")
     data.append("appiumbase_env")
     data.append("appiumbase_venv")
     data.append("abase_env")

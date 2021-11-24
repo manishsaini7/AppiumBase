@@ -3,7 +3,7 @@ import sys
 
 # Remove "" and current working directory from the first entry
 # of sys.path (if present) to avoid using the current directory
-# in SeleniumBase commands when invoked as "python -m sbase <command>"
+# in SeleniumBase commands when invoked as "python -m abase <command>"
 if sys.path[0] in ("", os.getcwd()):
     sys.path.pop(0)
 
