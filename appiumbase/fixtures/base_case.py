@@ -61,8 +61,8 @@ class BaseCase(unittest.TestCase):
     def close(self):
         self.driver.close_app()
 
-    def launch_app(self):
-        self.driver.lauch_app()
+    def launch(self):
+        self.driver.launch_app()
 
     def swipe_between_element(self, start_selector, dest_selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         self.__check_scope()
