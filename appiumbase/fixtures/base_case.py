@@ -199,19 +199,6 @@ class BaseCase(unittest.TestCase):
         self.__last_page_load_url = None
         self.driver.back()
 
-    def scroll_screen(self, start_x=100, start_y=100, end_x=0, end_y=0, duration=0):
-        """Swipe from one point to another point, for an optional duration.
-
-                Args:
-                    start_x: x-coordinate at which to start
-                    start_y: y-coordinate at which to start
-                    end_x: x-coordinate at which to stop
-                    end_y: y-coordinate at which to stop
-                    duration: time to take the swipe, in ms.
-        """
-        self.driver.swipe(start_x, start_y, end_x, end_y, duration)
-
-
     def is_checked(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
         """Determines if a checkbox or a radio button element is checked.
         Returns True if the element is checked.
@@ -872,7 +859,7 @@ class BaseCase(unittest.TestCase):
             # Not using pytest (probably nosetests)
             self.is_pytest = False
         if self.is_pytest:
-            self.remote_address = "http://127.0.0.1:4723/wd/hub"
+            self.remote_address = "http://0.0.0.0:4723/wd/hub"
             self.device = ab_config.device
             self.data = ab_config.data
             self.var1 = ab_config.var1
@@ -914,64 +901,6 @@ class BaseCase(unittest.TestCase):
         self.driver = webdriver.Remote(self.remote_address, self.dc)
         return self.driver
 
-    def app_background(self, time):
-        """
-        put the app in background with given time(in seconds)
-        example : app_background(10)
-        """
-        self.driver.background_app(time)
-
-    def check_keyboard_shown(self):
-        """
-        Attempts to detect whether a software keyboard is present
-        Returns:
-            `True` if keyboard is shown
-        """
-        return self.driver.is_keyboard_shown()
-
-    def get_location_of_element(self,selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None):
-        location={}
-        self.__check_scope()
-        if not timeout:
-            timeout = settings.LARGE_TIMEOUT
-        selector, by = self.__recalculate_selector(selector, by)
-        element = page_actions.wait_for_element_present(
-            self.driver, selector, by, timeout
-        )
-        location = element.location_in_view
-        x = location['x']
-        y = location['y']
-
-        return x , y
-
-    def scroll_the_screen(self,x,y,a,b,d):
-        '''
-        Scroll the screen according to cordinates
-        :param x: starting point 1
-        :param y: starting point 2
-        :param a: end point 1
-        :param b: end point 2
-        :param d: duration
-        '''
-        self.driver.swipe(x,y,a,b,d)
-
-    def long_press_on_btn(self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None, delay=0):
-        '''
-        self.__check_scope()
-        time.sleep(2)
-        actions = TouchAction(self.driver)
-        actions.long_press(selector)
-        '''
-        self.__check_scope()
-        if not timeout:
-            timeout = settings.SMALL_TIMEOUT
-        selector, by = self.__recalculate_selector(selector, by)
-        if delay and (type(delay) in [int, float]) and delay > 0:
-            time.sleep(delay)
-        element = page_actions.wait_for_element_visible(self.driver, selector, by, timeout=timeout)
-        actions = TouchAction(self.driver)
-        actions.long_press(element).perform()
-
     def tearDown(self):
         """
         Be careful if a subclass of BaseCase overrides setUp()
@@ -979,8 +908,4 @@ class BaseCase(unittest.TestCase):
         super(SubClassOfBaseCase, self).tearDown()
         """
         self.driver.quit()
-        #appium_launcher.stop_appium_service()
-
-
-
-
+        appium_launcher.stop_appium_service()
