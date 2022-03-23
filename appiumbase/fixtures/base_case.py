@@ -888,6 +888,7 @@ class BaseCase(unittest.TestCase):
             self.settings_file = ab_config.settings_file
             self._reuse_session = ab_config.reuse_session
             self.browser_stack = ab_config.browser_stack
+            self.lambda_test = ab_config.lambda_test
             self.pytest_html_report = ab_config.pytest_html_report
             if not hasattr(self, "device"):
                 raise Exception(
@@ -906,9 +907,13 @@ class BaseCase(unittest.TestCase):
 
         self.dc = capabilities_parser.get_desired_capabilities(self.cap_file)
 
-
         if self.browser_stack:
             self.remote_address = "http://hub-cloud.browserstack.com/wd/hub"
+
+        if self.lambda_test:
+            username = self.dc['user']
+            accesskey = self.dc['accessKey']
+            self.remote_address = f"https://{username}:{accesskey}@beta-hub.lambdatest.com/wd/hub"
 
         appium_launcher.start_appium_service()
         self.driver = webdriver.Remote(self.remote_address, self.dc)
@@ -980,3 +985,7 @@ class BaseCase(unittest.TestCase):
         """
         self.driver.quit()
         #appium_launcher.stop_appium_service()
+
+
+
+
