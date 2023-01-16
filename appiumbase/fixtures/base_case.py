@@ -977,6 +977,40 @@ class BaseCase(unittest.TestCase):
         actions = TouchAction(self.driver)
         actions.long_press(element).perform()
 
+    def clear_text(
+            self, selector, by=MobileBy.ACCESSIBILITY_ID, timeout=None, retry=False
+    ):
+        """This method updates an element's text field with new text.
+        Has multiple parts:
+        * Waits for the element to be visible.
+        * Waits for the element to be interactive.
+        * Clears the text field.
+        * Types in the new text.
+        * Hits Enter/Submit (if the text ends in "\n").
+        @Params
+        selector - the selector of the text field
+        text - the new text to type into the text field
+        by - the type of selector to search by (Default: CSS Selector)
+        timeout - how long to wait for the selector to be visible
+        retry - if True, use JS if the Selenium text update fails
+        """
+        self.__check_scope()
+        if not timeout:
+            timeout = settings.LARGE_TIMEOUT
+        selector, by = self.__recalculate_selector(selector, by)
+        element = self.wait_for_element_visible(
+            selector, by=by, timeout=timeout
+        )
+        self.__scroll_to_element(element, selector, by)
+        try:
+            element.clear()  # May need https://stackoverflow.com/a/50691625
+        except (StaleElementReferenceException, ENI_Exception):
+            time.sleep(0.16)
+            element = self.wait_for_element_visible(
+                selector, by=by, timeout=timeout
+            )
+
+
     def tearDown(self):
         """
         Be careful if a subclass of BaseCase overrides setUp()
